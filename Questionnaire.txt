@@ -1,0 +1,55 @@
+Questionnaire
+The structured questionnaire used for primary data collection, consisting of demographic details and Likert-scale items related to client feedback, approval processes, project delivery, and stakeholder satisfaction.
+Title:
+Questionnaire on Client Feedback and Approval Lifecycle and Its Impact on Project Delivery and Stakeholder Satisfaction
+Purpose of the Study:
+
+This questionnaire is part of an academic research study conducted to analyze the effectiveness of client feedback and approval processes and their impact on project delivery timelines and stakeholder satisfaction. All responses will be kept confidential and used strictly for academic purposes.
+Instructions:
+Please read each statement carefully and indicate your level of agreement using the following scale:
+1 – Strongly Disagree | 2 – Disagree | 3 – Neutral | 4 – Agree | 5 – Strongly Agree
+Section A: Demographic Information
+1.	Your current role in the organization:
+☐ Project Manager
+☐ Team Lead / Coordinator
+☐ Client-Facing Executive
+☐ Senior Stakeholder
+2.	Total years of professional experience:
+☐ Less than 2 years
+☐ 2–5 years
+☐ 5–10 years
+☐ More than 10 years
+
+
+Section B: Client Feedback Efficiency
+Please indicate your level of agreement with the following statements:
+3.	Client feedback is generally received within predefined and agreed timelines.
+4.	Feedback provided by clients is clear, specific, and actionable.
+5.	Feedback-related revisions are communicated effectively to the project team.
+6.	Delays in client feedback negatively impact project progress.
+Section C: Approval Process Efficiency
+Please indicate your level of agreement with the following statements:
+7.	Approval authority and responsibility are clearly defined within project workflows.
+8.	Multiple approval layers contribute to delays in project execution.
+9.	Approval escalation mechanisms are clearly established and communicated.
+10.	Approval processes are consistently followed across different projects.
+Section D: Project Delivery Timeliness
+Please indicate your level of agreement with the following statements:
+11.	Projects are usually delivered as per the planned schedule.
+12.	Delays in approvals frequently result in project overruns.
+13.	Efficient feedback and approval processes reduce rework and delivery delays.
+14.	Timely approvals contribute to better coordination among project stakeholders.
+
+Section E: Stakeholder Satisfaction
+Please indicate your level of agreement with the following statements:
+15.	Clients are satisfied with the communication process during project execution.
+16.	Efficient handling of feedback improves client trust and confidence.
+17.	Streamlined approval processes enhance overall stakeholder satisfaction.
+18.	The existing feedback and approval process positively influences long-term client relationships.
+Response Scale (for Sections B–E):
+Scale	Description
+1	Strongly Disagree
+2	Disagree
+3	Neutral
+4	Agree
+5	Strongly Agree
