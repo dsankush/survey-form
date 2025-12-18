@@ -17,6 +17,8 @@ A professional, responsive survey platform for collecting feedback on client fee
 The survey consists of 5 main sections:
 
 ### Section A: Demographic Information
+- Respondent's name
+- Email address
 - Current role in organization
 - Years of professional experience
 
@@ -95,6 +97,10 @@ Responses are sent as JSON with the following structure:
 ```json
 {
   "timestamp": "2025-12-18T10:30:00.000Z",
+  "respondent": {
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  },
   "demographics": {
     "role": "Project Manager",
     "experience": "5–10 years"

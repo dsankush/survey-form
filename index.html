@@ -176,6 +176,37 @@
             margin-left: 0.25rem;
         }
 
+        .text-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .text-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .text-input:invalid:not(:placeholder-shown) {
+            border-color: var(--danger-color);
+        }
+
+        .text-input:valid:not(:placeholder-shown) {
+            border-color: var(--success-color);
+        }
+
         .radio-group, .checkbox-group {
             display: flex;
             flex-direction: column;
@@ -397,6 +428,10 @@
                 font-size: 1.25rem;
             }
 
+            .text-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
             .scale-options {
                 grid-template-columns: repeat(5, 1fr);
                 gap: 0.5rem;
@@ -459,6 +494,33 @@
                     <span class="section-badge">Section A</span>
                     Demographic Information
                 </h2>
+                
+                <div class="question-group">
+                    <label class="question-label">
+                        Your Name: <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           name="name" 
+                           id="name" 
+                           class="text-input" 
+                           placeholder="Enter your full name" 
+                           required 
+                           minlength="2"
+                           autocomplete="name">
+                </div>
+
+                <div class="question-group">
+                    <label class="question-label">
+                        Your Email Address: <span class="required">*</span>
+                    </label>
+                    <input type="email" 
+                           name="email" 
+                           id="email" 
+                           class="text-input" 
+                           placeholder="your.email@example.com" 
+                           required
+                           autocomplete="email">
+                </div>
                 
                 <div class="question-group">
                     <label class="question-label">
@@ -1228,14 +1290,28 @@
         // Track progress
         function updateProgress() {
             const formElements = form.querySelectorAll('input[required]');
-            const totalFields = formElements.length;
+            const uniqueFields = new Set();
+            
+            // Get unique field names
+            formElements.forEach(element => {
+                uniqueFields.add(element.name);
+            });
+            
+            const totalFields = uniqueFields.size;
             let filledFields = 0;
 
-            formElements.forEach(element => {
-                const name = element.name;
-                const checkedInput = form.querySelector(`input[name="${name}"]:checked`);
-                if (checkedInput) {
-                    filledFields++;
+            uniqueFields.forEach(name => {
+                const element = form.querySelector(`input[name="${name}"]`);
+                
+                if (element.type === 'radio') {
+                    const checkedInput = form.querySelector(`input[name="${name}"]:checked`);
+                    if (checkedInput) {
+                        filledFields++;
+                    }
+                } else if (element.type === 'text' || element.type === 'email') {
+                    if (element.value.trim() !== '' && element.checkValidity()) {
+                        filledFields++;
+                    }
                 }
             });
 
@@ -1243,8 +1319,9 @@
             progressBar.style.width = progress + '%';
         }
 
-        // Listen to all radio button changes
+        // Listen to all form input changes
         form.addEventListener('change', updateProgress);
+        form.addEventListener('input', updateProgress);
 
         // Form submission
         form.addEventListener('submit', async (e) => {
@@ -1265,6 +1342,10 @@
             const formData = new FormData(form);
             const data = {
                 timestamp: new Date().toISOString(),
+                respondent: {
+                    name: formData.get('name'),
+                    email: formData.get('email')
+                },
                 demographics: {
                     role: formData.get('role'),
                     experience: formData.get('experience')
