@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Feedback & Approval Lifecycle Survey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #eef2ff;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f9fafb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .header .purpose {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .instructions {
+            background: var(--primary-light);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .instructions h3 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .instructions p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .scale-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+        }
+
+        .scale-item {
+            background: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .survey-form {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .section:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-badge {
+            background: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .section-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .question-group {
+            margin-bottom: 2rem;
+        }
+
+        .question-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .required {
+            color: var(--danger-color);
+            margin-left: 0.25rem;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .text-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .text-input:invalid:not(:placeholder-shown) {
+            border-color: var(--danger-color);
+        }
+
+        .text-input:valid:not(:placeholder-shown) {
+            border-color: var(--success-color);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-light);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .radio-option:hover, .checkbox-option:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .radio-option input[type="radio"],
+        .checkbox-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .radio-option label,
+        .checkbox-option label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .likert-scale {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .statement {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 1.25rem;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .scale-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+        }
+
+        .scale-option {
+            position: relative;
+        }
+
+        .scale-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .scale-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .scale-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .scale-option input[type="radio"]:checked + .scale-label {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .scale-option input[type="radio"]:checked + .scale-label .scale-number,
+        .scale-option input[type="radio"]:checked + .scale-label .scale-text {
+            color: white;
+        }
+
+        .scale-option:hover .scale-label {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .submit-section {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--danger-color);
+            display: none;
+        }
+
+        .success-message {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            display: none;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 3rem;
+        }
+
+        .success-message h2 {
+            color: var(--success-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-message p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .survey-form {
+                padding: 2rem 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+
+            .text-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .scale-options {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.5rem;
+            }
+
+            .scale-label {
+                padding: 0.75rem 0.25rem;
+            }
+
+            .scale-number {
+                font-size: 1.25rem;
+            }
+
+            .scale-text {
+                font-size: 0.65rem;
+            }
+
+            .submit-btn {
+                width: 100%;
+                padding: 1rem 2rem;
+            }
+        }
+
+        .validation-error {
+            border-color: var(--danger-color) !important;
+            background: #fee2e2 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Questionnaire on Client Feedback and Approval Lifecycle</h1>
+            <p class="purpose">
+                This questionnaire is part of an academic research study conducted to analyze the effectiveness 
+                of client feedback and approval processes and their impact on project delivery timelines and 
+                stakeholder satisfaction. All responses will be kept confidential and used strictly for academic purposes.
+            </p>
+            <div class="instructions">
+                <h3>📋 Instructions</h3>
+                <p>Please read each statement carefully and indicate your level of agreement using the scale below:</p>
+                <div class="scale-legend">
+                    <span class="scale-item">1 – Strongly Disagree</span>
+                    <span class="scale-item">2 – Disagree</span>
+                    <span class="scale-item">3 – Neutral</span>
+                    <span class="scale-item">4 – Agree</span>
+                    <span class="scale-item">5 – Strongly Agree</span>
+                </div>
+            </div>
+        </div>
+
+        <form id="surveyForm" class="survey-form">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <!-- Section A: Demographics -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-badge">Section A</span>
+                    Demographic Information
+                </h2>
+                
+                <div class="question-group">
+                    <label class="question-label">
+                        Your Name: <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           name="name" 
+                           id="name" 
+                           class="text-input" 
+                           placeholder="Enter your full name" 
+                           required 
+                           minlength="2"
+                           autocomplete="name">
+                </div>
+
+                <div class="question-group">
+                    <label class="question-label">
+                        Your Email Address: <span class="required">*</span>
+                    </label>
+                    <input type="email" 
+                           name="email" 
+                           id="email" 
+                           class="text-input" 
+                           placeholder="your.email@example.com" 
+                           required
+                           autocomplete="email">
+                </div>
+                
+                <div class="question-group">
+                    <label class="question-label">
+                        Your current role in the organization: <span class="required">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="role1" name="role" value="Project Manager" required>
+                            <label for="role1">Project Manager</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="role2" name="role" value="Team Lead / Coordinator">
+                            <label for="role2">Team Lead / Coordinator</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="role3" name="role" value="Client-Facing Executive">
+                            <label for="role3">Client-Facing Executive</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="role4" name="role" value="Senior Stakeholder">
+                            <label for="role4">Senior Stakeholder</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label class="question-label">
+                        Total years of professional experience: <span class="required">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="exp1" name="experience" value="Less than 2 years" required>
+                            <label for="exp1">Less than 2 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="exp2" name="experience" value="2–5 years">
+                            <label for="exp2">2–5 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="exp3" name="experience" value="5–10 years">
+                            <label for="exp3">5–10 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="exp4" name="experience" value="More than 10 years">
+                            <label for="exp4">More than 10 years</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section B: Client Feedback Efficiency -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-badge">Section B</span>
+                    Client Feedback Efficiency
+                </h2>
+                <p class="section-description">Please indicate your level of agreement with the following statements:</p>
+
+                <div class="likert-scale">
+                    <div class="statement">Client feedback is generally received within predefined and agreed timelines.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="b1_1" name="feedback_timely" value="1" required>
+                            <label for="b1_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b1_2" name="feedback_timely" value="2">
+                            <label for="b1_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b1_3" name="feedback_timely" value="3">
+                            <label for="b1_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b1_4" name="feedback_timely" value="4">
+                            <label for="b1_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b1_5" name="feedback_timely" value="5">
+                            <label for="b1_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Feedback provided by clients is clear, specific, and actionable.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="b2_1" name="feedback_clear" value="1" required>
+                            <label for="b2_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b2_2" name="feedback_clear" value="2">
+                            <label for="b2_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b2_3" name="feedback_clear" value="3">
+                            <label for="b2_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b2_4" name="feedback_clear" value="4">
+                            <label for="b2_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b2_5" name="feedback_clear" value="5">
+                            <label for="b2_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Feedback-related revisions are communicated effectively to the project team.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="b3_1" name="feedback_communicated" value="1" required>
+                            <label for="b3_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b3_2" name="feedback_communicated" value="2">
+                            <label for="b3_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b3_3" name="feedback_communicated" value="3">
+                            <label for="b3_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b3_4" name="feedback_communicated" value="4">
+                            <label for="b3_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b3_5" name="feedback_communicated" value="5">
+                            <label for="b3_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Delays in client feedback negatively impact project progress.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="b4_1" name="feedback_delays_impact" value="1" required>
+                            <label for="b4_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b4_2" name="feedback_delays_impact" value="2">
+                            <label for="b4_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b4_3" name="feedback_delays_impact" value="3">
+                            <label for="b4_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b4_4" name="feedback_delays_impact" value="4">
+                            <label for="b4_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="b4_5" name="feedback_delays_impact" value="5">
+                            <label for="b4_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section C: Approval Process Efficiency -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-badge">Section C</span>
+                    Approval Process Efficiency
+                </h2>
+                <p class="section-description">Please indicate your level of agreement with the following statements:</p>
+
+                <div class="likert-scale">
+                    <div class="statement">Approval authority and responsibility are clearly defined within project workflows.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="c1_1" name="approval_defined" value="1" required>
+                            <label for="c1_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c1_2" name="approval_defined" value="2">
+                            <label for="c1_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c1_3" name="approval_defined" value="3">
+                            <label for="c1_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c1_4" name="approval_defined" value="4">
+                            <label for="c1_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c1_5" name="approval_defined" value="5">
+                            <label for="c1_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Multiple approval layers contribute to delays in project execution.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="c2_1" name="approval_layers_delay" value="1" required>
+                            <label for="c2_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c2_2" name="approval_layers_delay" value="2">
+                            <label for="c2_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c2_3" name="approval_layers_delay" value="3">
+                            <label for="c2_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c2_4" name="approval_layers_delay" value="4">
+                            <label for="c2_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c2_5" name="approval_layers_delay" value="5">
+                            <label for="c2_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Approval escalation mechanisms are clearly established and communicated.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="c3_1" name="approval_escalation" value="1" required>
+                            <label for="c3_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c3_2" name="approval_escalation" value="2">
+                            <label for="c3_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c3_3" name="approval_escalation" value="3">
+                            <label for="c3_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c3_4" name="approval_escalation" value="4">
+                            <label for="c3_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c3_5" name="approval_escalation" value="5">
+                            <label for="c3_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Approval processes are consistently followed across different projects.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="c4_1" name="approval_consistent" value="1" required>
+                            <label for="c4_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c4_2" name="approval_consistent" value="2">
+                            <label for="c4_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c4_3" name="approval_consistent" value="3">
+                            <label for="c4_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c4_4" name="approval_consistent" value="4">
+                            <label for="c4_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="c4_5" name="approval_consistent" value="5">
+                            <label for="c4_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section D: Project Delivery Timeliness -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-badge">Section D</span>
+                    Project Delivery Timeliness
+                </h2>
+                <p class="section-description">Please indicate your level of agreement with the following statements:</p>
+
+                <div class="likert-scale">
+                    <div class="statement">Projects are usually delivered as per the planned schedule.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="d1_1" name="delivery_on_schedule" value="1" required>
+                            <label for="d1_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d1_2" name="delivery_on_schedule" value="2">
+                            <label for="d1_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d1_3" name="delivery_on_schedule" value="3">
+                            <label for="d1_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d1_4" name="delivery_on_schedule" value="4">
+                            <label for="d1_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d1_5" name="delivery_on_schedule" value="5">
+                            <label for="d1_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Delays in approvals frequently result in project overruns.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="d2_1" name="delays_cause_overruns" value="1" required>
+                            <label for="d2_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d2_2" name="delays_cause_overruns" value="2">
+                            <label for="d2_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d2_3" name="delays_cause_overruns" value="3">
+                            <label for="d2_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d2_4" name="delays_cause_overruns" value="4">
+                            <label for="d2_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d2_5" name="delays_cause_overruns" value="5">
+                            <label for="d2_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Efficient feedback and approval processes reduce rework and delivery delays.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="d3_1" name="efficiency_reduces_delays" value="1" required>
+                            <label for="d3_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d3_2" name="efficiency_reduces_delays" value="2">
+                            <label for="d3_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d3_3" name="efficiency_reduces_delays" value="3">
+                            <label for="d3_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d3_4" name="efficiency_reduces_delays" value="4">
+                            <label for="d3_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d3_5" name="efficiency_reduces_delays" value="5">
+                            <label for="d3_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Timely approvals contribute to better coordination among project stakeholders.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="d4_1" name="timely_approvals_coordination" value="1" required>
+                            <label for="d4_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d4_2" name="timely_approvals_coordination" value="2">
+                            <label for="d4_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d4_3" name="timely_approvals_coordination" value="3">
+                            <label for="d4_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d4_4" name="timely_approvals_coordination" value="4">
+                            <label for="d4_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="d4_5" name="timely_approvals_coordination" value="5">
+                            <label for="d4_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section E: Stakeholder Satisfaction -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-badge">Section E</span>
+                    Stakeholder Satisfaction
+                </h2>
+                <p class="section-description">Please indicate your level of agreement with the following statements:</p>
+
+                <div class="likert-scale">
+                    <div class="statement">Clients are satisfied with the communication process during project execution.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="e1_1" name="client_communication_satisfaction" value="1" required>
+                            <label for="e1_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e1_2" name="client_communication_satisfaction" value="2">
+                            <label for="e1_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e1_3" name="client_communication_satisfaction" value="3">
+                            <label for="e1_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e1_4" name="client_communication_satisfaction" value="4">
+                            <label for="e1_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e1_5" name="client_communication_satisfaction" value="5">
+                            <label for="e1_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Efficient handling of feedback improves client trust and confidence.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="e2_1" name="feedback_improves_trust" value="1" required>
+                            <label for="e2_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e2_2" name="feedback_improves_trust" value="2">
+                            <label for="e2_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e2_3" name="feedback_improves_trust" value="3">
+                            <label for="e2_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e2_4" name="feedback_improves_trust" value="4">
+                            <label for="e2_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e2_5" name="feedback_improves_trust" value="5">
+                            <label for="e2_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">Streamlined approval processes enhance overall stakeholder satisfaction.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="e3_1" name="streamlined_approval_satisfaction" value="1" required>
+                            <label for="e3_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e3_2" name="streamlined_approval_satisfaction" value="2">
+                            <label for="e3_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e3_3" name="streamlined_approval_satisfaction" value="3">
+                            <label for="e3_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e3_4" name="streamlined_approval_satisfaction" value="4">
+                            <label for="e3_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e3_5" name="streamlined_approval_satisfaction" value="5">
+                            <label for="e3_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="likert-scale">
+                    <div class="statement">The existing feedback and approval process positively influences long-term client relationships.</div>
+                    <div class="scale-options">
+                        <div class="scale-option">
+                            <input type="radio" id="e4_1" name="process_influences_relationships" value="1" required>
+                            <label for="e4_1" class="scale-label">
+                                <span class="scale-number">1</span>
+                                <span class="scale-text">Strongly Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e4_2" name="process_influences_relationships" value="2">
+                            <label for="e4_2" class="scale-label">
+                                <span class="scale-number">2</span>
+                                <span class="scale-text">Disagree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e4_3" name="process_influences_relationships" value="3">
+                            <label for="e4_3" class="scale-label">
+                                <span class="scale-number">3</span>
+                                <span class="scale-text">Neutral</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e4_4" name="process_influences_relationships" value="4">
+                            <label for="e4_4" class="scale-label">
+                                <span class="scale-number">4</span>
+                                <span class="scale-text">Agree</span>
+                            </label>
+                        </div>
+                        <div class="scale-option">
+                            <input type="radio" id="e4_5" name="process_influences_relationships" value="5">
+                            <label for="e4_5" class="scale-label">
+                                <span class="scale-number">5</span>
+                                <span class="scale-text">Strongly Agree</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Submit Survey
+                </button>
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            <h2>Thank You!</h2>
+            <p>Your responses have been successfully submitted. We appreciate your time and valuable feedback.</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('surveyForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const progressBar = document.getElementById('progressBar');
+
+        const WEBHOOK_URL = 'https://n8n.srv1152566.hstgr.cloud/webhook/9ea174cc-7458-463e-adcb-5bedd1d39ed6';
+
+        // Track progress
+        function updateProgress() {
+            const formElements = form.querySelectorAll('input[required]');
+            const uniqueFields = new Set();
+            
+            // Get unique field names
+            formElements.forEach(element => {
+                uniqueFields.add(element.name);
+            });
+            
+            const totalFields = uniqueFields.size;
+            let filledFields = 0;
+
+            uniqueFields.forEach(name => {
+                const element = form.querySelector(`input[name="${name}"]`);
+                
+                if (element.type === 'radio') {
+                    const checkedInput = form.querySelector(`input[name="${name}"]:checked`);
+                    if (checkedInput) {
+                        filledFields++;
+                    }
+                } else if (element.type === 'text' || element.type === 'email') {
+                    if (element.value.trim() !== '' && element.checkValidity()) {
+                        filledFields++;
+                    }
+                }
+            });
+
+            const progress = (filledFields / totalFields) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        // Listen to all form input changes
+        form.addEventListener('change', updateProgress);
+        form.addEventListener('input', updateProgress);
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate form
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Disable submit button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span>Submitting...';
+            errorMessage.style.display = 'none';
+
+            // Collect form data
+            const formData = new FormData(form);
+            const data = {
+                timestamp: new Date().toISOString(),
+                respondent: {
+                    name: formData.get('name'),
+                    email: formData.get('email')
+                },
+                demographics: {
+                    role: formData.get('role'),
+                    experience: formData.get('experience')
+                },
+                client_feedback_efficiency: {
+                    feedback_timely: parseInt(formData.get('feedback_timely')),
+                    feedback_clear: parseInt(formData.get('feedback_clear')),
+                    feedback_communicated: parseInt(formData.get('feedback_communicated')),
+                    feedback_delays_impact: parseInt(formData.get('feedback_delays_impact'))
+                },
+                approval_process_efficiency: {
+                    approval_defined: parseInt(formData.get('approval_defined')),
+                    approval_layers_delay: parseInt(formData.get('approval_layers_delay')),
+                    approval_escalation: parseInt(formData.get('approval_escalation')),
+                    approval_consistent: parseInt(formData.get('approval_consistent'))
+                },
+                project_delivery_timeliness: {
+                    delivery_on_schedule: parseInt(formData.get('delivery_on_schedule')),
+                    delays_cause_overruns: parseInt(formData.get('delays_cause_overruns')),
+                    efficiency_reduces_delays: parseInt(formData.get('efficiency_reduces_delays')),
+                    timely_approvals_coordination: parseInt(formData.get('timely_approvals_coordination'))
+                },
+                stakeholder_satisfaction: {
+                    client_communication_satisfaction: parseInt(formData.get('client_communication_satisfaction')),
+                    feedback_improves_trust: parseInt(formData.get('feedback_improves_trust')),
+                    streamlined_approval_satisfaction: parseInt(formData.get('streamlined_approval_satisfaction')),
+                    process_influences_relationships: parseInt(formData.get('process_influences_relationships'))
+                }
+            };
+
+            try {
+                // Send to webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Hide form and show success message
+                    form.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error('Failed to submit survey');
+                }
+            } catch (error) {
+                console.error('Error submitting survey:', error);
+                errorMessage.textContent = 'Sorry, there was an error submitting your response. Please try again.';
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Survey';
+            }
+        });
+
+        // Initialize progress bar
+        updateProgress();
+    </script>
+</body>
+</html>
